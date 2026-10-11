@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d02
+  namespace: drill
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: d02
+  template:
+    metadata:
+      labels:
+        app: d02
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.36
+          command: [sh, -c]
+          args:
+            - |
+              echo "starting app"
+              [ -n "$PORT" ] || { echo "fatal: PORT is required" >&2; exit 1; }
+              echo "listening on $PORT"
+              exec httpd -f -p "$PORT"
+          resources:
+            limits:
+              memory: 16Mi

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: private
+  namespace: secure
+  labels: {app: private}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: private}
+  template:
+    metadata:
+      labels: {app: private}
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: app
+        image: registry.example.com/team/app:v1

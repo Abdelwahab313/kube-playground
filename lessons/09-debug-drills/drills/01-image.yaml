@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d01
+  namespace: drill
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: d01
+  template:
+    metadata:
+      labels:
+        app: d01
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpne
+          ports:
+            - containerPort: 80

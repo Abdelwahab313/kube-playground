@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: d06-config
+  namespace: drill
+data:
+  LOG_LEVEL: info
+  nginx.conf: |
+    events {}
+    http {
+      server {
+        listen 80;
+        location / { return 200 'd06 ok\n'; }
+      }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: d06-secret
+  namespace: drill
+stringData:
+  API_KEY: abc123
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d06
+  namespace: drill
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: d06
+  template:
+    metadata:
+      labels:
+        app: d06
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          env:
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: d06-config
+                  key: LOG_LEVEL
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: d06-secrets
+                  key: API_KEY
+          volumeMounts:
+            - name: cfg
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: cfg
+          configMap:
+            name: d06-config
+            items:
+              - key: nginx.config
+                path: nginx.conf

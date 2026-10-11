@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-pod
+  labels:
+    lesson: "01"
+
+spec:
+  containers:
+    - name: app
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80
+      env:
+        - name: GREETING
+          value: hello
+    - name: logger
+      image: busybox:1.36
+      command: ["sh", "-c", "while true; do sleep 10; echo $(date) ; done"]
